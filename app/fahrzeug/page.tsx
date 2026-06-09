@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { BatteryCharging, Droplets, Fuel, Gauge, Wrench } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { VehicleForm } from "@/components/forms";
 import { SoftCard } from "@/components/ui";
 import { getVehicle } from "@/lib/data";
 
@@ -19,13 +20,22 @@ export default async function VehiclePage() {
           <div className="h-24 w-32 rounded-2xl bg-[linear-gradient(145deg,#e9e3d5,#cbd9bd)] shadow-inset" />
         </div>
       </SoftCard>
-      <div className="mt-4 grid gap-3 md:grid-cols-2">
-        <Status icon={<Fuel size={19} />} label="Reichweite" value={vehicle.range} />
-        <Status icon={<Droplets size={19} />} label="Frischwasser" value={`${vehicle.water}%`} />
-        <Status icon={<Droplets size={19} />} label="Abwasser" value={`${vehicle.wastewater}%`} />
-        <Status icon={<BatteryCharging size={19} />} label="Batterie" value={`${vehicle.battery}%`} />
-        <Status icon={<Wrench size={19} />} label="Nächster Service" value={vehicle.nextService} />
-        <Status icon={<Gauge size={19} />} label="Reifendruck" value="geprüft" />
+      <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_22rem]">
+        <div className="grid gap-3 md:grid-cols-2">
+          <Status icon={<Fuel size={19} />} label="Reichweite" value={vehicle.range} />
+          <Status icon={<Droplets size={19} />} label="Frischwasser" value={`${vehicle.water}%`} />
+          <Status icon={<Droplets size={19} />} label="Abwasser" value={`${vehicle.wastewater}%`} />
+          <Status icon={<BatteryCharging size={19} />} label="Batterie" value={`${vehicle.battery}%`} />
+          <Status icon={<Wrench size={19} />} label="Nächster Service" value={vehicle.nextService} />
+          <Status icon={<Gauge size={19} />} label="Reifendruck" value="geprüft" />
+        </div>
+        <SoftCard>
+          <h2 className="text-lg font-semibold text-forest-900">Fahrzeug bearbeiten</h2>
+          <p className="mt-1 text-sm text-forest-900/58">Statuswerte werden in deinem Profil gespeichert.</p>
+          <div className="mt-4">
+            <VehicleForm vehicle={vehicle} />
+          </div>
+        </SoftCard>
       </div>
     </AppShell>
   );

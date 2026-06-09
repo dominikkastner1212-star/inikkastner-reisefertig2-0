@@ -2,12 +2,13 @@ import type { LucideIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Droplets, Heart, MapPin, ShowerHead, Star, Trash2, Wifi, Zap } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { SavePlaceButton } from "@/components/forms";
 import { SoftCard } from "@/components/ui";
-import { getPlace } from "@/lib/data";
+import { getIsPlaceSaved, getPlace } from "@/lib/data";
 
 export default async function PlaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const place = await getPlace(id);
+  const [place, saved] = await Promise.all([getPlace(id), getIsPlaceSaved(id)]);
   if (!place) notFound();
 
   const amenities: Array<[string, LucideIcon]> = [
@@ -58,7 +59,8 @@ export default async function PlaceDetailPage({ params }: { params: Promise<{ id
           <SoftCard>
             <p className="text-2xl font-semibold text-forest-900">{place.price} EUR / Nacht</p>
             <p className="mt-1 text-xs text-forest-900/58">inkl. 2 Personen, Strom, WLAN</p>
-            <button className="mt-4 h-12 w-full rounded-2xl bg-forest-700 text-sm font-semibold text-linen">Verfügbarkeit prüfen</button>
+            <SavePlaceButton placeId={place.id} saved={saved} />
+            <button className="mt-2 h-12 w-full rounded-2xl bg-cream text-sm font-semibold text-forest-900">Verfügbarkeit prüfen</button>
           </SoftCard>
         </div>
       </section>

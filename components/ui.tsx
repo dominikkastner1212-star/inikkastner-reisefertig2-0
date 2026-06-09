@@ -13,6 +13,15 @@ export function SectionTitle({ title, action }: { title: string; action?: string
   );
 }
 
+export function EmptyState({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="rounded-2xl border border-dashed border-forest-700/18 bg-linen/55 p-6 text-center">
+      <p className="text-sm font-semibold text-forest-900">{title}</p>
+      <p className="mt-2 text-sm leading-6 text-forest-900/58">{text}</p>
+    </div>
+  );
+}
+
 export function SoftCard({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <div className={`rounded-2xl border border-forest-700/10 bg-linen/78 p-4 shadow-inset ${className}`}>{children}</div>;
 }

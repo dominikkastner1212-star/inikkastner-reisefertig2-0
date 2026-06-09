@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { CalendarDays, MapPinned, Route } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { TripForm } from "@/components/forms";
+import { TripEditForm, TripForm } from "@/components/forms";
 import { ProgressBar } from "@/components/progress-bar";
-import { SectionTitle, SoftCard } from "@/components/ui";
+import { EmptyState, SectionTitle, SoftCard } from "@/components/ui";
 import { getTrips } from "@/lib/data";
 
 export default async function TripsPage() {
@@ -14,6 +14,9 @@ export default async function TripsPage() {
       <div className="grid gap-4 lg:grid-cols-[1fr_21rem]">
         <div>
           <SectionTitle title="Reiseübersicht" action="Mai 2026" />
+          {!trips.length ? (
+            <EmptyState title="Noch keine Reisen" text="Lege rechts deine erste Reise an. Danach erscheint sie hier mit Route, Stopps und Budget." />
+          ) : null}
           <div className="grid gap-4 lg:grid-cols-2">
             {trips.map((trip) => (
               <SoftCard key={trip.id}>
@@ -32,6 +35,7 @@ export default async function TripsPage() {
                 </div>
                 <ProgressBar value={trip.spent} max={trip.budget} />
                 <p className="mt-2 text-xs text-forest-900/58">{trip.spent.toFixed(2)} EUR bisher geplant</p>
+                <TripEditForm trip={trip} />
               </SoftCard>
             ))}
           </div>

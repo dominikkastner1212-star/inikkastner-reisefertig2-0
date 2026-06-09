@@ -61,6 +61,48 @@ export async function createTrip(formData: FormData) {
   revalidatePath("/kosten");
 }
 
+export async function updateTrip(formData: FormData) {
+  const { client } = await getUserSupabase();
+  if (!client) return;
+
+  const id = getText(formData, "id");
+  const title = getText(formData, "title");
+  if (!id || !title) return;
+
+  await client
+    .from("trips")
+    .update({
+      title,
+      dates: getText(formData, "dates") || "Noch offen",
+      region: getText(formData, "region") || "Route offen",
+      days: getNumber(formData, "days", 7),
+      distance_km: getNumber(formData, "distanceKm", 300),
+      stops: getNumber(formData, "stops", 4),
+      budget: getNumber(formData, "budget", 600)
+    })
+    .eq("id", id);
+
+  revalidatePath("/reisen");
+  revalidatePath("/dashboard");
+  revalidatePath("/routenplaner");
+  revalidatePath("/kosten");
+}
+
+export async function deleteTrip(formData: FormData) {
+  const { client } = await getUserSupabase();
+  if (!client) return;
+
+  const id = getText(formData, "id");
+  if (!id) return;
+
+  await client.from("trips").delete().eq("id", id);
+
+  revalidatePath("/reisen");
+  revalidatePath("/dashboard");
+  revalidatePath("/packlisten");
+  revalidatePath("/kosten");
+}
+
 export async function togglePackItem(formData: FormData) {
   const { client } = await getUserSupabase();
   if (!client) return;
@@ -117,6 +159,54 @@ export async function createCost(formData: FormData) {
   );
 
   revalidatePath("/kosten");
+}
+
+export async function updateVehicle(formData: FormData) {
+  const { client, user } = await getUserSupabase();
+  if (!client || !user) return;
+
+  const payload = {
+    user_id: user.id,
+    name: getText(formData, "name") || "Wohnmobil",
+    plate: getText(formData, "plate") || `RF-${user.id.slice(0, 6)}`,
+    mileage: getText(formData, "mileage") || "0 km",
+    range: getText(formData, "range") || "0 km",
+    water: getNumber(formData, "water"),
+    wastewater: getNumber(formData, "wastewater"),
+    battery: getNumber(formData, "battery"),
+    next_service: getText(formData, "nextService") || "Noch offen"
+  };
+
+  const { data } = await client.from("vehicles").select("id").eq("user_id", user.id).limit(1).maybeSingle();
+
+  if (data?.id) {
+    await client.from("vehicles").update(payload).eq("id", data.id);
+  } else {
+    await client.from("vehicles").insert(payload);
+  }
+
+  revalidatePath("/fahrzeug");
+}
+
+export async function toggleSavedPlace(formData: FormData) {
+  const { client, user } = await getUserSupabase();
+  if (!client || !user) return;
+
+  const placeId = getText(formData, "placeId");
+  const saved = getText(formData, "saved") === "true";
+  if (!placeId) return;
+
+  if (saved) {
+    await client.from("saved_places").delete().eq("place_id", placeId);
+  } else {
+    await client.from("saved_places").insert({
+      user_id: user.id,
+      place_id: placeId
+    });
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/stellplaetze/${placeId}`);
 }
 
 export async function signIn(formData: FormData) {

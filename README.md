@@ -50,6 +50,7 @@ Die Datenbankdateien:
 - `supabase/schema.sql`
 - `supabase/seed.sql`
 - `supabase/auth_rls.sql`
+- `supabase/saved_places.sql`
 
 `auth_rls.sql` ergänzt `user_id`, aktiviert Row Level Security und schützt Reisen, Packpunkte, Kosten und Fahrzeuge pro Nutzer.
 

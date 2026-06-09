@@ -93,6 +93,21 @@ export async function getPlace(id: string): Promise<Place | undefined> {
   return allPlaces.find((place) => place.id === id);
 }
 
+export async function getSavedPlaceIds(): Promise<string[]> {
+  const { client } = await getUserSupabase();
+  if (!client) return [];
+
+  const { data, error } = await client.from("saved_places").select("place_id").order("created_at", { ascending: true });
+  if (error || !data?.length) return [];
+
+  return data.map((item) => item.place_id as string);
+}
+
+export async function getIsPlaceSaved(placeId: string): Promise<boolean> {
+  const savedPlaceIds = await getSavedPlaceIds();
+  return savedPlaceIds.includes(placeId);
+}
+
 export async function getPackItems(): Promise<PackItem[]> {
   const { client } = await getUserSupabase();
   if (!client) return packItems;
