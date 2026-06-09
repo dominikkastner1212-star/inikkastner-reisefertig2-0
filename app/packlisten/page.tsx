@@ -1,14 +1,15 @@
 import { AppShell } from "@/components/app-shell";
 import { PackItemForm, PackToggle } from "@/components/forms";
 import { SectionTitle, SoftCard } from "@/components/ui";
-import { getPackItems } from "@/lib/data";
+import { getPackItems, getTrips } from "@/lib/data";
 
 const categories = ["Wohnmobil", "Kleidung", "Kueche", "Dokumente"] as const;
 
 export default async function PacklistsPage() {
-  const packItems = await getPackItems();
+  const [packItems, trips] = await Promise.all([getPackItems(), getTrips()]);
   const doneCount = packItems.filter((item) => item.done).length;
   const progress = packItems.length ? Math.round((doneCount / packItems.length) * 100) : 0;
+  const activeTrip = trips[0];
 
   return (
     <AppShell title="Packliste">
@@ -42,7 +43,7 @@ export default async function PacklistsPage() {
           <p className="mt-2 text-sm leading-6 text-forest-900/62">{doneCount} von {packItems.length} Punkten sind erledigt.</p>
           <div className="mt-6 border-t border-forest-700/10 pt-5">
             <p className="mb-3 text-sm font-semibold text-forest-900">Neuer Packpunkt</p>
-            <PackItemForm />
+            <PackItemForm tripId={activeTrip?.id} />
           </div>
         </SoftCard>
       </div>

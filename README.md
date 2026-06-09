@@ -8,6 +8,8 @@ Reisefertig2.0 ist eine mobile-first PWA für die Organisation von Wohnmobilreis
 - TypeScript
 - Tailwind CSS
 - Supabase vorbereitet
+- Supabase Auth mit geschützten App-Seiten
+- Row Level Security für nutzereigene Daten
 - PWA Manifest
 - Mockdaten für den ersten UI-Stand
 
@@ -41,7 +43,15 @@ NEXT_PUBLIC_SUPABASE_URL=https://skbpamzsfubkthzdtocw.supabase.co
 
 Den `NEXT_PUBLIC_SUPABASE_ANON_KEY` kopierst du aus Supabase unter Project Settings -> API.
 
-Die App nutzt Mockdaten aus `data/mock.ts`, solange keine Supabase-Variablen gesetzt sind. Der vorbereitete Client liegt in `lib/supabase.ts`, die Datenzugriffsschicht in `lib/data.ts`, das erste SQL-Schema in `supabase/schema.sql` und Demo-Inhalte in `supabase/seed.sql`.
+Die App nutzt Mockdaten aus `data/mock.ts`, solange keine Supabase-Variablen gesetzt sind. Der vorbereitete Client liegt in `lib/supabase.ts`, die Datenzugriffsschicht in `lib/data.ts`, Auth-Helfer in `lib/auth.ts` und Server Actions in `lib/actions.ts`.
+
+Die Datenbankdateien:
+
+- `supabase/schema.sql`
+- `supabase/seed.sql`
+- `supabase/auth_rls.sql`
+
+`auth_rls.sql` ergänzt `user_id`, aktiviert Row Level Security und schützt Reisen, Packpunkte, Kosten und Fahrzeuge pro Nutzer.
 
 ## Datenmodell
 

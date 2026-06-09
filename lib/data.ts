@@ -1,5 +1,5 @@
 import { costs, packItems, places, trips, vehicle } from "@/data/mock";
-import { supabase } from "@/lib/supabase";
+import { getUserSupabase } from "@/lib/auth";
 import type { CostItem, PackItem, Place, Trip } from "@/lib/types";
 
 type TripRow = {
@@ -53,9 +53,10 @@ type VehicleRow = {
 };
 
 export async function getTrips(): Promise<Trip[]> {
-  if (!supabase) return trips;
+  const { client } = await getUserSupabase();
+  if (!client) return trips;
 
-  const { data, error } = await supabase.from("trips").select("*").order("created_at", { ascending: true });
+  const { data, error } = await client.from("trips").select("*").order("created_at", { ascending: true });
   if (error || !data?.length) return trips;
 
   return (data as TripRow[]).map((trip) => ({
@@ -74,9 +75,10 @@ export async function getTrips(): Promise<Trip[]> {
 }
 
 export async function getPlaces(): Promise<Place[]> {
-  if (!supabase) return places;
+  const { client } = await getUserSupabase();
+  if (!client) return places;
 
-  const { data, error } = await supabase.from("places").select("*").order("created_at", { ascending: true });
+  const { data, error } = await client.from("places").select("*").order("created_at", { ascending: true });
   if (error || !data?.length) return places;
 
   return (data as PlaceRow[]).map((place) => ({
@@ -92,27 +94,30 @@ export async function getPlace(id: string): Promise<Place | undefined> {
 }
 
 export async function getPackItems(): Promise<PackItem[]> {
-  if (!supabase) return packItems;
+  const { client } = await getUserSupabase();
+  if (!client) return packItems;
 
-  const { data, error } = await supabase.from("pack_items").select("id,label,category,done,priority").order("created_at", { ascending: true });
+  const { data, error } = await client.from("pack_items").select("id,label,category,done,priority").order("created_at", { ascending: true });
   if (error || !data?.length) return packItems;
 
   return data as PackItemRow[];
 }
 
 export async function getCosts(): Promise<CostItem[]> {
-  if (!supabase) return costs;
+  const { client } = await getUserSupabase();
+  if (!client) return costs;
 
-  const { data, error } = await supabase.from("cost_items").select("label,amount,color").order("created_at", { ascending: true });
+  const { data, error } = await client.from("cost_items").select("label,amount,color").order("created_at", { ascending: true });
   if (error || !data?.length) return costs;
 
   return (data as CostItemRow[]).map((item) => ({ ...item, amount: Number(item.amount) }));
 }
 
 export async function getVehicle(): Promise<typeof vehicle> {
-  if (!supabase) return vehicle;
+  const { client } = await getUserSupabase();
+  if (!client) return vehicle;
 
-  const { data, error } = await supabase.from("vehicles").select("*").order("created_at", { ascending: true }).limit(1).maybeSingle();
+  const { data, error } = await client.from("vehicles").select("*").order("created_at", { ascending: true }).limit(1).maybeSingle();
   if (error || !data) return vehicle;
 
   const row = data as VehicleRow;

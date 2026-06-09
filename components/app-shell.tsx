@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CalendarDays, Caravan, Home, Map, MapPinned, Plus, Route, User } from "lucide-react";
+import { CalendarDays, Caravan, Home, LogOut, Map, MapPinned, Plus, Route, User } from "lucide-react";
+import { signOut } from "@/lib/actions";
+import { getCurrentUser } from "@/lib/auth";
 import { Logo } from "@/components/logo";
 
 const navItems = [
@@ -21,7 +23,9 @@ const sideItems = [
   { href: "/kosten", label: "Kosten", icon: Plus }
 ];
 
-export function AppShell({ children, title }: { children: ReactNode; title?: string }) {
+export async function AppShell({ children, title }: { children: ReactNode; title?: string }) {
+  const user = await getCurrentUser();
+
   return (
     <div className="min-h-screen lg:flex">
       <aside className="glass-panel fixed left-4 top-4 z-30 hidden h-[calc(100vh-2rem)] w-64 rounded-[1.5rem] p-4 lg:block">
@@ -34,6 +38,13 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
             </Link>
           ))}
         </nav>
+        <form action={signOut} className="absolute bottom-4 left-4 right-4">
+          <p className="mb-2 truncate px-3 text-xs text-forest-900/55">{user?.email ?? "Offline-Modus"}</p>
+          <button className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-forest-900/75 transition hover:bg-forest-100 hover:text-forest-900">
+            <LogOut size={18} />
+            Abmelden
+          </button>
+        </form>
       </aside>
       <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-4 lg:ml-72 lg:px-8 lg:pb-10">
         <header className="mb-5 flex items-center justify-between lg:hidden">

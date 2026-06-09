@@ -27,9 +27,10 @@ export function TripForm() {
   );
 }
 
-export function PackItemForm() {
+export function PackItemForm({ tripId }: { tripId?: string }) {
   return (
     <form action={createPackItem} className="grid gap-3">
+      <input type="hidden" name="tripId" value={tripId ?? ""} />
       <input name="label" required placeholder="Neuer Packpunkt" className={inputClass} />
       <div className="grid grid-cols-2 gap-2">
         <select name="category" className={inputClass} defaultValue="Wohnmobil">
