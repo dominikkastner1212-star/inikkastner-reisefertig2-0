@@ -1,5 +1,5 @@
-import { Plus } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { CostForm } from "@/components/forms";
 import { SoftCard } from "@/components/ui";
 import { getCosts, getTrips } from "@/lib/data";
 
@@ -13,17 +13,14 @@ export default async function CostsPage() {
       <div className="grid gap-4 lg:grid-cols-[20rem_1fr]">
         <SoftCard>
           <p className="text-sm text-forest-900/60">Gesamtkosten</p>
-          <p className="mt-2 text-5xl font-semibold text-forest-900">{trip.spent.toFixed(2)} EUR</p>
+          <p className="mt-2 text-5xl font-semibold text-forest-900">{total.toFixed(2)} EUR</p>
           <div className="relative mx-auto mt-8 h-44 w-44 rounded-full border-[1.1rem] border-moss">
             <div className="absolute inset-4 rounded-full border-[1.1rem] border-forest-700/80 border-r-clay border-t-stone" />
             <div className="absolute inset-0 grid place-items-center text-center">
-              <span className="text-sm font-semibold text-forest-900">{Math.round((total / trip.budget) * 100)}%</span>
+              <span className="text-sm font-semibold text-forest-900">{trip.budget ? Math.round((total / trip.budget) * 100) : 0}%</span>
             </div>
           </div>
-          <button className="mt-8 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-forest-700 text-sm font-semibold text-linen">
-            <Plus size={17} />
-            Ausgabe hinzufügen
-          </button>
+          <CostForm tripId={trip.id} />
         </SoftCard>
         <SoftCard>
           <h1 className="text-xl font-semibold text-forest-900">Budget nach Kategorie</h1>
