@@ -1,7 +1,8 @@
-import { Plus } from "lucide-react";
-import { createCost, createPackItem, createTrip, deleteTrip, inviteTripMember, removeTripMember, togglePackItem, toggleSavedPlace, updateTrip, updateVehicle } from "@/lib/actions";
+import { Link2, Plus } from "lucide-react";
+import { createCost, createPackItem, createTrip, createTripInviteLink, deleteTrip, removeTripMember, togglePackItem, toggleSavedPlace, updateTrip, updateVehicle } from "@/lib/actions";
 import type { PackItem, Trip, TripMember } from "@/lib/types";
 import { vehicle as mockVehicle } from "@/data/mock";
+import { CopyLink } from "@/components/copy-link";
 
 const inputClass = "min-h-11 rounded-xl border border-forest-700/10 bg-linen px-3 text-sm text-forest-900 outline-none ring-forest-700/20 transition focus:ring-4";
 
@@ -140,17 +141,27 @@ export function SavePlaceButton({ placeId, saved }: { placeId: string; saved: bo
   );
 }
 
-export function InviteMemberForm({ tripId }: { tripId: string }) {
+export function InviteMemberForm({ tripId, inviteUrl, inviteError = false }: { tripId: string; inviteUrl?: string | null; inviteError?: boolean }) {
   return (
-    <form action={inviteTripMember} className="grid gap-3">
-      <input type="hidden" name="tripId" value={tripId} />
-      <input name="email" type="email" required placeholder="E-Mail einladen" className={inputClass} />
-      <select name="role" className={inputClass} defaultValue="editor">
-        <option value="editor">Kann bearbeiten</option>
-        <option value="viewer">Nur ansehen</option>
-      </select>
-      <button className="h-11 rounded-2xl bg-forest-700 text-sm font-semibold text-linen">Person einladen</button>
-    </form>
+    <div className="grid gap-3">
+      {inviteUrl ? <CopyLink url={inviteUrl} /> : null}
+      {inviteError ? (
+        <p className="rounded-xl bg-clay/35 px-3 py-2 text-xs font-semibold text-forest-900">
+          Der Link konnte nicht erstellt werden. Prüfe kurz, ob die Datenbank-Migration schon aktiv ist.
+        </p>
+      ) : null}
+      <form action={createTripInviteLink} className="grid gap-3">
+        <input type="hidden" name="tripId" value={tripId} />
+        <select name="role" className={inputClass} defaultValue="editor" aria-label="Berechtigung">
+          <option value="editor">Kann bearbeiten</option>
+          <option value="viewer">Nur ansehen</option>
+        </select>
+        <button className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-forest-700 text-sm font-semibold text-linen">
+          <Link2 size={17} />
+          Einladungslink erstellen
+        </button>
+      </form>
+    </div>
   );
 }
 

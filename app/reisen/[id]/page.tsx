@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { BatteryCharging, CalendarDays, Euro, MapPinned, Route, Shirt, Users, Wrench } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
@@ -8,8 +9,14 @@ import { ProgressBar } from "@/components/progress-bar";
 import { EmptyState, PlaceCard, SoftCard } from "@/components/ui";
 import { getCosts, getPackItems, getSavedPlaces, getTrip, getTripMembers, getVehicle } from "@/lib/data";
 
-export default async function TripDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function TripDetailPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ invite?: string }>;
+}) {
+  const [{ id }, query] = await Promise.all([params, searchParams]);
   const [trip, packItems, costs, savedPlaces, vehicle, members] = await Promise.all([
     getTrip(id),
     getPackItems(id),
@@ -25,6 +32,8 @@ export default async function TripDetailPage({ params }: { params: Promise<{ id:
   const packProgress = packItems.length ? Math.round((doneCount / packItems.length) * 100) : 0;
   const costTotal = costs.reduce((sum, item) => sum + item.amount, 0);
   const budgetProgress = trip.budget ? Math.min(100, Math.round((costTotal / trip.budget) * 100)) : 0;
+  const inviteToken = isInviteToken(query.invite) ? query.invite : null;
+  const inviteUrl = inviteToken ? await buildInviteUrl(inviteToken) : null;
 
   return (
     <AppShell title={trip.title}>
@@ -88,12 +97,12 @@ export default async function TripDetailPage({ params }: { params: Promise<{ id:
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold text-forest-900">Gemeinsam planen</h2>
-                <p className="mt-1 text-sm text-forest-900/58">Lade Personen per E-Mail zu dieser Reise ein.</p>
+                <p className="mt-1 text-sm text-forest-900/58">Erstelle einen Link und teile ihn mit deiner Reisegruppe.</p>
               </div>
               <Users size={21} className="text-forest-700" />
             </div>
             <div className="mt-4">
-              <InviteMemberForm tripId={trip.id} />
+              <InviteMemberForm tripId={trip.id} inviteUrl={inviteUrl} inviteError={query.invite === "fehlgeschlagen"} />
             </div>
             <div className="mt-5 border-t border-forest-700/10 pt-4">
               <MemberList tripId={trip.id} members={members} />
@@ -167,4 +176,17 @@ function VehicleMetric({ icon, label, value }: { icon: React.ReactNode; label: s
       <span className="text-sm font-semibold text-forest-700">{value}</span>
     </div>
   );
+}
+
+function isInviteToken(value?: string) {
+  return Boolean(value && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value));
+}
+
+async function buildInviteUrl(token: string) {
+  const headerStore = await headers();
+  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  if (!host) return `/einladung/${token}`;
+
+  const protocol = headerStore.get("x-forwarded-proto") ?? "https";
+  return `${protocol}://${host}/einladung/${token}`;
 }

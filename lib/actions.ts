@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { clearSessionCookies, getUserSupabase, setSessionCookies } from "@/lib/auth";
-import { supabase } from "@/lib/supabase";
+import { clearSessionCookies, getAccessToken, getCurrentUser, getUserSupabase, setSessionCookies } from "@/lib/auth";
+import { createSupabaseWithToken, supabase } from "@/lib/supabase";
 import { costs, packItems, trips, vehicle } from "@/data/mock";
 import type { PackItem } from "@/lib/types";
 
@@ -123,6 +123,59 @@ export async function inviteTripMember(formData: FormData) {
   );
 
   revalidatePath(`/reisen/${tripId}`);
+}
+
+export async function createTripInviteLink(formData: FormData) {
+  const { client, user } = await getUserSupabase();
+  if (!client || !user) return;
+
+  const tripId = getText(formData, "tripId");
+  const role = getText(formData, "role") || "editor";
+  if (!tripId) return;
+
+  const { data, error } = await client
+    .from("trip_invites")
+    .insert({
+      trip_id: tripId,
+      role,
+      created_by: user.id
+    })
+    .select("token")
+    .single();
+
+  revalidatePath(`/reisen/${tripId}`);
+
+  if (error || !data?.token) {
+    redirect(`/reisen/${tripId}?invite=fehlgeschlagen`);
+  }
+
+  redirect(`/reisen/${tripId}?invite=${data.token}`);
+}
+
+export async function acceptTripInvite(formData: FormData) {
+  const token = getText(formData, "token");
+  if (!token) redirect("/dashboard");
+
+  const next = `/einladung/${token}`;
+  const user = await getCurrentUser();
+  const accessToken = await getAccessToken();
+
+  if (!user || !accessToken) {
+    redirect(`/login?next=${encodeURIComponent(next)}`);
+  }
+
+  const client = createSupabaseWithToken(accessToken);
+  if (!client) redirect("/login?message=supabase-fehlt");
+
+  const { data, error } = await client.rpc("accept_trip_invite", { invite_token: token });
+  if (error || !data) {
+    redirect(`${next}?message=ungueltig`);
+  }
+
+  const tripId = String(data);
+  revalidatePath("/reisen");
+  revalidatePath(`/reisen/${tripId}`);
+  redirect(`/reisen/${tripId}`);
 }
 
 export async function removeTripMember(formData: FormData) {
@@ -250,13 +303,14 @@ export async function signIn(formData: FormData) {
   const email = getText(formData, "email");
   const password = getText(formData, "password");
   const next = getText(formData, "next") || "/dashboard";
+  const safeNext = next.startsWith("/") ? next : "/dashboard";
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error || !data.session) redirect("/login?message=login-fehlgeschlagen");
+  if (error || !data.session) redirect(`/login?message=login-fehlgeschlagen&next=${encodeURIComponent(safeNext)}`);
 
   await setSessionCookies(data.session);
   await seedUserData(data.session.user.id, data.session.access_token);
-  redirect(next.startsWith("/") ? next : "/dashboard");
+  redirect(safeNext);
 }
 
 export async function signUp(formData: FormData) {
@@ -264,17 +318,19 @@ export async function signUp(formData: FormData) {
 
   const email = getText(formData, "email");
   const password = getText(formData, "password");
+  const next = getText(formData, "next") || "/dashboard";
+  const safeNext = next.startsWith("/") ? next : "/dashboard";
 
   const { data, error } = await supabase.auth.signUp({ email, password });
-  if (error) redirect("/login?message=registrierung-fehlgeschlagen");
+  if (error) redirect(`/login?message=registrierung-fehlgeschlagen&next=${encodeURIComponent(safeNext)}`);
 
   if (data.session) {
     await setSessionCookies(data.session);
     await seedUserData(data.session.user.id, data.session.access_token);
-    redirect("/dashboard");
+    redirect(safeNext);
   }
 
-  redirect("/login?message=bitte-email-bestaetigen");
+  redirect(`/login?message=bitte-email-bestaetigen&next=${encodeURIComponent(safeNext)}`);
 }
 
 export async function signOut() {
