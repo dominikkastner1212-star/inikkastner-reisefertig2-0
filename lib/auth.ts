@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { createSupabaseWithToken, isSupabaseConfigured, supabase } from "@/lib/supabase";
 
@@ -32,12 +33,12 @@ export async function clearSessionCookies() {
   cookieStore.delete(REFRESH_COOKIE);
 }
 
-export async function getAccessToken() {
+export const getAccessToken = cache(async function getAccessToken() {
   const cookieStore = await cookies();
   return cookieStore.get(ACCESS_COOKIE)?.value;
-}
+});
 
-export async function getCurrentUser(): Promise<User | null> {
+export const getCurrentUser = cache(async function getCurrentUser(): Promise<User | null> {
   if (!supabase) return null;
 
   const accessToken = await getAccessToken();
@@ -47,18 +48,18 @@ export async function getCurrentUser(): Promise<User | null> {
   if (error) return null;
 
   return data.user;
-}
+});
 
-export async function requireUser() {
+export const requireUser = cache(async function requireUser() {
   if (!isSupabaseConfigured) return null;
 
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
   return user;
-}
+});
 
-export async function getUserSupabase() {
+export const getUserSupabase = cache(async function getUserSupabase() {
   if (!isSupabaseConfigured) return { client: null, user: null };
 
   const user = await requireUser();
@@ -68,4 +69,4 @@ export async function getUserSupabase() {
     client: createSupabaseWithToken(accessToken),
     user
   };
-}
+});

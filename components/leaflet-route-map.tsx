@@ -42,6 +42,7 @@ export function LeafletRouteMap({ trip, places }: { trip?: Trip; places: Place[]
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [interactive, setInteractive] = useState(false);
 
   const stops = useMemo(() => {
     const savedStops = places
@@ -55,7 +56,7 @@ export function LeafletRouteMap({ trip, places }: { trip?: Trip; places: Place[]
   }, [places]);
 
   useEffect(() => {
-    if (!loaded || !ref.current || !window.L || mapRef.current) return;
+    if (!interactive || !loaded || !ref.current || !window.L || mapRef.current) return;
 
     const map = window.L.map(ref.current, {
       zoomControl: false,
@@ -95,13 +96,19 @@ export function LeafletRouteMap({ trip, places }: { trip?: Trip; places: Place[]
       map.remove();
       mapRef.current = null;
     };
-  }, [loaded, stops]);
+  }, [interactive, loaded, stops]);
 
   return (
     <div className="relative overflow-hidden rounded-[2rem] border border-forest-700/10 bg-linen shadow-soft">
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-      <Script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" strategy="afterInteractive" onLoad={() => setLoaded(true)} />
-      <div ref={ref} className="h-[32rem] w-full bg-forest-50" />
+      {interactive ? (
+        <>
+          <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+          <Script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" strategy="lazyOnload" onLoad={() => setLoaded(true)} />
+          <div ref={ref} className="h-[32rem] w-full bg-forest-50" />
+        </>
+      ) : (
+        <FastRoutePreview stops={stops} onLoadMap={() => setInteractive(true)} />
+      )}
       <div className="pointer-events-none absolute inset-x-3 bottom-3 rounded-[1.65rem] bg-linen/92 p-4 shadow-soft backdrop-blur">
         <h1 className="text-xl font-semibold text-forest-900">{trip?.title ?? "Neue Route"}</h1>
         <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-forest-900/65">
@@ -113,6 +120,32 @@ export function LeafletRouteMap({ trip, places }: { trip?: Trip; places: Place[]
           Route mit echten Kartenkacheln, gespeicherten Stellplätzen und einer planbaren Etappenlinie.
         </p>
       </div>
+    </div>
+  );
+}
+
+function FastRoutePreview({ stops, onLoadMap }: { stops: typeof fallbackStops; onLoadMap: () => void }) {
+  return (
+    <div className="map-grid relative h-[32rem] overflow-hidden">
+      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 380 520" fill="none" aria-hidden="true">
+        <path d="M70 110 C130 122, 104 184, 174 214 C238 242, 176 322, 258 354 C316 378, 282 436, 326 466" stroke="#2B5A3C" strokeWidth="6" strokeLinecap="round" strokeDasharray="2 12" />
+        <path d="M20 400 C80 358, 130 410, 184 368 C244 320, 306 346, 380 300" stroke="#A8C0A1" strokeWidth="80" strokeLinecap="round" opacity=".28" />
+        <path d="M0 190 C90 124, 122 176, 210 116 C288 62, 322 98, 390 48" stroke="#D6C2A6" strokeWidth="90" strokeLinecap="round" opacity=".2" />
+      </svg>
+      {stops.slice(0, 4).map((stop, index) => {
+        const positions = ["left-[18%] top-[18%]", "left-[34%] top-[38%]", "right-[28%] top-[56%]", "right-[12%] bottom-[14%]"];
+        return (
+          <span key={stop.name} className={`absolute ${positions[index]} grid h-9 w-9 place-items-center rounded-full bg-forest-700 text-xs font-bold text-linen ring-4 ring-linen/75`}>
+            {index + 1}
+          </span>
+        );
+      })}
+      <button
+        onClick={onLoadMap}
+        className="absolute right-4 top-4 rounded-2xl bg-linen/90 px-4 py-3 text-xs font-semibold text-forest-900 shadow-soft"
+      >
+        Interaktive Karte laden
+      </button>
     </div>
   );
 }

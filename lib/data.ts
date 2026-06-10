@@ -1,5 +1,6 @@
 import { costs, packItems, places, trips, vehicle } from "@/data/mock";
 import { getUserSupabase } from "@/lib/auth";
+import { supabase } from "@/lib/supabase";
 import type { CostItem, PackItem, Place, Trip } from "@/lib/types";
 
 type TripRow = {
@@ -75,10 +76,9 @@ export async function getTrips(): Promise<Trip[]> {
 }
 
 export async function getPlaces(): Promise<Place[]> {
-  const { client } = await getUserSupabase();
-  if (!client) return places;
+  if (!supabase) return places;
 
-  const { data, error } = await client.from("places").select("*").order("created_at", { ascending: true });
+  const { data, error } = await supabase.from("places").select("*").order("created_at", { ascending: true });
   if (error || !data?.length) return places;
 
   return (data as PlaceRow[]).map((place) => ({
