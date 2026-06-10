@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { CalendarDays, MapPinned, Route } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
@@ -35,6 +36,9 @@ export default async function TripsPage() {
                 </div>
                 <ProgressBar value={trip.spent} max={trip.budget} />
                 <p className="mt-2 text-xs text-forest-900/58">{trip.spent.toFixed(2)} EUR bisher geplant</p>
+                <Link href={`/reisen/${trip.id}`} className="mt-4 grid h-11 place-items-center rounded-2xl bg-forest-700 text-sm font-semibold text-linen">
+                  Reise öffnen
+                </Link>
                 <TripEditForm trip={trip} />
               </SoftCard>
             ))}

@@ -25,6 +25,7 @@ export type Place = {
 
 export type PackItem = {
   id: string;
+  tripId?: string | null;
   label: string;
   category: "Wohnmobil" | "Kleidung" | "Kueche" | "Dokumente";
   done: boolean;
@@ -32,6 +33,7 @@ export type PackItem = {
 };
 
 export type CostItem = {
+  tripId?: string | null;
   label: string;
   amount: number;
   color: string;

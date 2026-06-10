@@ -30,6 +30,7 @@ type PlaceRow = {
 
 type PackItemRow = {
   id: string;
+  trip_id: string | null;
   label: string;
   category: PackItem["category"];
   done: boolean;
@@ -37,6 +38,7 @@ type PackItemRow = {
 };
 
 type CostItemRow = {
+  trip_id: string | null;
   label: string;
   amount: number;
   color: string;
@@ -75,6 +77,11 @@ export async function getTrips(): Promise<Trip[]> {
   }));
 }
 
+export async function getTrip(id: string): Promise<Trip | undefined> {
+  const allTrips = await getTrips();
+  return allTrips.find((trip) => trip.id === id);
+}
+
 export async function getPlaces(): Promise<Place[]> {
   if (!supabase) return places;
 
@@ -103,29 +110,49 @@ export async function getSavedPlaceIds(): Promise<string[]> {
   return data.map((item) => item.place_id as string);
 }
 
+export async function getSavedPlaces(): Promise<Place[]> {
+  const [allPlaces, savedPlaceIds] = await Promise.all([getPlaces(), getSavedPlaceIds()]);
+  return allPlaces.filter((place) => savedPlaceIds.includes(place.id));
+}
+
 export async function getIsPlaceSaved(placeId: string): Promise<boolean> {
   const savedPlaceIds = await getSavedPlaceIds();
   return savedPlaceIds.includes(placeId);
 }
 
-export async function getPackItems(): Promise<PackItem[]> {
+export async function getPackItems(tripId?: string): Promise<PackItem[]> {
   const { client } = await getUserSupabase();
   if (!client) return packItems;
 
-  const { data, error } = await client.from("pack_items").select("id,label,category,done,priority").order("created_at", { ascending: true });
-  if (error || !data?.length) return packItems;
+  let query = client.from("pack_items").select("id,trip_id,label,category,done,priority").order("created_at", { ascending: true });
+  if (tripId) query = query.eq("trip_id", tripId);
 
-  return data as PackItemRow[];
+  const { data, error } = await query;
+  if (error) return tripId ? [] : packItems;
+  if (!data?.length) return tripId ? [] : packItems;
+
+  return (data as PackItemRow[]).map((item) => ({
+    id: item.id,
+    tripId: item.trip_id,
+    label: item.label,
+    category: item.category,
+    done: item.done,
+    priority: item.priority
+  }));
 }
 
-export async function getCosts(): Promise<CostItem[]> {
+export async function getCosts(tripId?: string): Promise<CostItem[]> {
   const { client } = await getUserSupabase();
   if (!client) return costs;
 
-  const { data, error } = await client.from("cost_items").select("label,amount,color").order("created_at", { ascending: true });
-  if (error || !data?.length) return costs;
+  let query = client.from("cost_items").select("trip_id,label,amount,color").order("created_at", { ascending: true });
+  if (tripId) query = query.eq("trip_id", tripId);
 
-  return (data as CostItemRow[]).map((item) => ({ ...item, amount: Number(item.amount) }));
+  const { data, error } = await query;
+  if (error) return tripId ? [] : costs;
+  if (!data?.length) return tripId ? [] : costs;
+
+  return (data as CostItemRow[]).map((item) => ({ tripId: item.trip_id, label: item.label, amount: Number(item.amount), color: item.color }));
 }
 
 export async function getVehicle(): Promise<typeof vehicle> {

@@ -37,6 +37,7 @@ export function PrimaryButton({ href, children }: { href: string; children: Reac
 
 export function TripCard({ trip }: { trip: Trip }) {
   return (
+    <Link href={`/reisen/${trip.id}`} className="block">
     <SoftCard className="overflow-hidden p-0">
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
@@ -59,6 +60,7 @@ export function TripCard({ trip }: { trip: Trip }) {
         <div className="h-full bg-[radial-gradient(circle_at_72%_22%,#d6bf99_0_2.1rem,transparent_2.2rem),linear-gradient(150deg,transparent_40%,rgba(47,81,59,.2)_41%),linear-gradient(15deg,rgba(47,81,59,.36),transparent_55%)]" />
       </div>
     </SoftCard>
+    </Link>
   );
 }
 
