@@ -5,6 +5,18 @@
 :root {
   color-scheme: light;
   background: #fbf8f1;
+  --rf-wald: #2b5a3c;
+  --rf-wald-d: #224a30;
+  --rf-salbei: #a8c0a1;
+  --rf-moos: #d0e7d6;
+  --rf-sand: #f3efe7;
+  --rf-lehm: #d6c2a6;
+  --rf-kohle: #2b2b2b;
+  --rf-dark-bg: #1a1c19;
+  --rf-dark-card: #242721;
+  --rf-dark-card-2: #2c2f28;
+  --rf-dark-ink: #ecefe8;
+  --rf-dark-ink-2: #9da398;
 }
 
 * {
@@ -23,6 +35,15 @@ body {
     linear-gradient(145deg, #fbf8f1 0%, #f7f0e3 55%, #eef3e8 100%);
   color: #17241c;
   font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  transition: background 0.35s cubic-bezier(.4,0,.2,1), color 0.35s cubic-bezier(.4,0,.2,1);
+}
+
+body.dark {
+  color-scheme: dark;
+  background:
+    radial-gradient(circle at top left, rgba(43, 90, 60, 0.22), transparent 28rem),
+    linear-gradient(145deg, var(--rf-dark-bg) 0%, #20231f 58%, #171915 100%);
+  color: var(--rf-dark-ink);
 }
 
 a {
@@ -43,6 +64,12 @@ select {
   backdrop-filter: blur(22px);
 }
 
+body.dark .glass-panel {
+  background: rgba(36, 39, 33, 0.86);
+  border-color: rgba(168, 192, 161, 0.14);
+  box-shadow: 0 18px 58px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
 .map-grid {
   background-image:
     linear-gradient(rgba(47, 81, 59, 0.08) 1px, transparent 1px),
@@ -52,6 +79,70 @@ select {
   background-size: 38px 38px, 38px 38px, auto, auto;
 }
 
+body.dark .map-grid {
+  background-image:
+    linear-gradient(rgba(168, 192, 161, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 192, 161, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 20% 20%, rgba(43, 61, 46, 0.9), transparent 18rem),
+    radial-gradient(circle at 80% 75%, rgba(92, 76, 54, 0.35), transparent 20rem);
+}
+
 .safe-bottom {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+body.dark [class*="bg-linen"],
+body.dark [class*="bg-cream"] {
+  background-color: rgba(36, 39, 33, var(--tw-bg-opacity, 1)) !important;
+}
+
+body.dark [class*="bg-forest-50"] {
+  background-color: rgba(44, 47, 40, var(--tw-bg-opacity, 1)) !important;
+}
+
+body.dark [class*="bg-moss"] {
+  background-color: rgba(42, 61, 46, var(--tw-bg-opacity, 1)) !important;
+}
+
+body.dark [class*="text-forest-900"],
+body.dark [class*="text-ink"] {
+  color: rgba(236, 239, 232, var(--tw-text-opacity, 1)) !important;
+}
+
+body.dark [class*="text-forest-700"] {
+  color: rgba(168, 192, 161, var(--tw-text-opacity, 1)) !important;
+}
+
+body.dark [class*="border-forest-700"] {
+  border-color: rgba(168, 192, 161, 0.16) !important;
+}
+
+body.dark input,
+body.dark select,
+body.dark textarea {
+  background: var(--rf-dark-card-2) !important;
+  color: var(--rf-dark-ink) !important;
+}
+
+body.dark .leaflet-tile {
+  filter: brightness(.72) invert(1) contrast(.9) hue-rotate(180deg) saturate(.65);
+}
+
+.rf-map-pin {
+  background: transparent;
+  border: 0;
+}
+
+.rf-map-pin span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--rf-wald);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 800;
+  box-shadow: 0 8px 20px rgba(43, 90, 60, 0.32);
+  outline: 4px solid rgba(255, 255, 255, 0.78);
 }

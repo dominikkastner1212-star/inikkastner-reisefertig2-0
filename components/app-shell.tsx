@@ -4,6 +4,7 @@ import { CalendarDays, Caravan, Home, LogOut, Map, MapPinned, Plus, Route, User 
 import { signOut } from "@/lib/actions";
 import { getCurrentUser } from "@/lib/auth";
 import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const navItems = [
   { href: "/dashboard", label: "Start", icon: Home },
@@ -52,9 +53,7 @@ export async function AppShell({ children, title }: { children: ReactNode; title
             <span className="h-0.5 w-4 rounded bg-current before:mt-[-6px] before:block before:h-0.5 before:w-4 before:rounded before:bg-current after:mt-[10px] after:block after:h-0.5 after:w-4 after:rounded after:bg-current" />
           </button>
           <p className="text-sm font-semibold">{title ?? "Reisefertig2.0"}</p>
-          <button className="grid h-10 w-10 place-items-center rounded-full bg-linen text-forest-900 shadow-inset" aria-label="Profil">
-            <User size={18} />
-          </button>
+          <ThemeToggle />
         </header>
         {children}
       </main>

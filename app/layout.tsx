@@ -14,6 +14,10 @@ export const metadata: Metadata = {
   title: "Reisefertig2.0",
   description: "Deine Reise. Perfekt organisiert.",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/icons/icon.svg",
+    apple: "/icons/icon.svg"
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
