@@ -31,6 +31,7 @@ Aktive Migrationen:
 - Row Level Security für nutzereigene Daten
 - Dashboard
 - Reisen anlegen, bearbeiten und löschen
+- Reisen gemeinsam mit eingeladenen Personen bearbeiten
 - Packlisten anlegen und abhaken
 - Kosten erfassen
 - Stellplätze anzeigen und speichern

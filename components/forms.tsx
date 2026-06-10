@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
-import { createCost, createPackItem, createTrip, deleteTrip, togglePackItem, toggleSavedPlace, updateTrip, updateVehicle } from "@/lib/actions";
-import type { PackItem, Trip } from "@/lib/types";
+import { createCost, createPackItem, createTrip, deleteTrip, inviteTripMember, removeTripMember, togglePackItem, toggleSavedPlace, updateTrip, updateVehicle } from "@/lib/actions";
+import type { PackItem, Trip, TripMember } from "@/lib/types";
 import { vehicle as mockVehicle } from "@/data/mock";
 
 const inputClass = "min-h-11 rounded-xl border border-forest-700/10 bg-linen px-3 text-sm text-forest-900 outline-none ring-forest-700/20 transition focus:ring-4";
@@ -137,5 +137,43 @@ export function SavePlaceButton({ placeId, saved }: { placeId: string; saved: bo
         {saved ? "Gespeichert" : "Stellplatz speichern"}
       </button>
     </form>
+  );
+}
+
+export function InviteMemberForm({ tripId }: { tripId: string }) {
+  return (
+    <form action={inviteTripMember} className="grid gap-3">
+      <input type="hidden" name="tripId" value={tripId} />
+      <input name="email" type="email" required placeholder="E-Mail einladen" className={inputClass} />
+      <select name="role" className={inputClass} defaultValue="editor">
+        <option value="editor">Kann bearbeiten</option>
+        <option value="viewer">Nur ansehen</option>
+      </select>
+      <button className="h-11 rounded-2xl bg-forest-700 text-sm font-semibold text-linen">Person einladen</button>
+    </form>
+  );
+}
+
+export function MemberList({ tripId, members }: { tripId: string; members: TripMember[] }) {
+  if (!members.length) {
+    return <p className="text-sm leading-6 text-forest-900/58">Noch niemand eingeladen.</p>;
+  }
+
+  return (
+    <div className="grid gap-2">
+      {members.map((member) => (
+        <div key={member.id} className="flex items-center justify-between gap-3 rounded-xl bg-forest-50 px-3 py-3">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-forest-900">{member.email}</p>
+            <p className="text-xs text-forest-900/55">{member.role === "editor" ? "Kann bearbeiten" : "Nur ansehen"}</p>
+          </div>
+          <form action={removeTripMember}>
+            <input type="hidden" name="tripId" value={tripId} />
+            <input type="hidden" name="memberId" value={member.id} />
+            <button className="rounded-full bg-clay/45 px-3 py-1 text-xs font-semibold text-forest-900">Entfernen</button>
+          </form>
+        </div>
+      ))}
+    </div>
   );
 }

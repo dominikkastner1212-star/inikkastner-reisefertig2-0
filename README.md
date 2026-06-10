@@ -51,8 +51,10 @@ Die Datenbankdateien:
 - `supabase/seed.sql`
 - `supabase/auth_rls.sql`
 - `supabase/saved_places.sql`
+- `supabase/trip_members.sql`
 
 `auth_rls.sql` ergänzt `user_id`, aktiviert Row Level Security und schützt Reisen, Packpunkte, Kosten und Fahrzeuge pro Nutzer.
+`trip_members.sql` ergänzt gemeinsame Reisen: Besitzer können Personen per E-Mail zu einer Reise einladen, eingeladene Nutzer können nach Login mit derselben E-Mail gemeinsam planen.
 
 ## Datenmodell
 

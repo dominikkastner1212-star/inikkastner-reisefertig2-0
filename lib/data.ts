@@ -1,7 +1,7 @@
 import { costs, packItems, places, trips, vehicle } from "@/data/mock";
 import { getUserSupabase } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
-import type { CostItem, PackItem, Place, Trip } from "@/lib/types";
+import type { CostItem, PackItem, Place, Trip, TripMember } from "@/lib/types";
 
 type TripRow = {
   id: string;
@@ -53,6 +53,14 @@ type VehicleRow = {
   wastewater: number;
   battery: number;
   next_service: string;
+};
+
+type TripMemberRow = {
+  id: number;
+  trip_id: string;
+  email: string;
+  role: TripMember["role"];
+  created_at: string;
 };
 
 export async function getTrips(): Promise<Trip[]> {
@@ -174,4 +182,25 @@ export async function getVehicle(): Promise<typeof vehicle> {
     battery: row.battery,
     nextService: row.next_service
   };
+}
+
+export async function getTripMembers(tripId: string): Promise<TripMember[]> {
+  const { client } = await getUserSupabase();
+  if (!client) return [];
+
+  const { data, error } = await client
+    .from("trip_members")
+    .select("id,trip_id,email,role,created_at")
+    .eq("trip_id", tripId)
+    .order("created_at", { ascending: true });
+
+  if (error || !data?.length) return [];
+
+  return (data as TripMemberRow[]).map((member) => ({
+    id: member.id,
+    tripId: member.trip_id,
+    email: member.email,
+    role: member.role,
+    createdAt: member.created_at
+  }));
 }

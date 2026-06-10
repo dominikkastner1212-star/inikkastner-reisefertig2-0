@@ -1,21 +1,22 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BatteryCharging, CalendarDays, Euro, MapPinned, Route, Shirt, Wrench } from "lucide-react";
+import { BatteryCharging, CalendarDays, Euro, MapPinned, Route, Shirt, Users, Wrench } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { CostForm, PackItemForm, PackToggle, TripEditForm } from "@/components/forms";
+import { CostForm, InviteMemberForm, MemberList, PackItemForm, PackToggle, TripEditForm } from "@/components/forms";
 import { LeafletRouteMap } from "@/components/leaflet-route-map";
 import { ProgressBar } from "@/components/progress-bar";
 import { EmptyState, PlaceCard, SoftCard } from "@/components/ui";
-import { getCosts, getPackItems, getSavedPlaces, getTrip, getVehicle } from "@/lib/data";
+import { getCosts, getPackItems, getSavedPlaces, getTrip, getTripMembers, getVehicle } from "@/lib/data";
 
 export default async function TripDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [trip, packItems, costs, savedPlaces, vehicle] = await Promise.all([
+  const [trip, packItems, costs, savedPlaces, vehicle, members] = await Promise.all([
     getTrip(id),
     getPackItems(id),
     getCosts(id),
     getSavedPlaces(),
-    getVehicle()
+    getVehicle(),
+    getTripMembers(id)
   ]);
 
   if (!trip) notFound();
@@ -81,6 +82,22 @@ export default async function TripDetailPage({ params }: { params: Promise<{ id:
           <SoftCard>
             <h2 className="text-lg font-semibold text-forest-900">Reise bearbeiten</h2>
             <TripEditForm trip={trip} />
+          </SoftCard>
+
+          <SoftCard>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold text-forest-900">Gemeinsam planen</h2>
+                <p className="mt-1 text-sm text-forest-900/58">Lade Personen per E-Mail zu dieser Reise ein.</p>
+              </div>
+              <Users size={21} className="text-forest-700" />
+            </div>
+            <div className="mt-4">
+              <InviteMemberForm tripId={trip.id} />
+            </div>
+            <div className="mt-5 border-t border-forest-700/10 pt-4">
+              <MemberList tripId={trip.id} members={members} />
+            </div>
           </SoftCard>
 
           <SoftCard>

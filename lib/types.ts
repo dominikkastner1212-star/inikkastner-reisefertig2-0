@@ -38,3 +38,11 @@ export type CostItem = {
   amount: number;
   color: string;
 };
+
+export type TripMember = {
+  id: number;
+  tripId: string;
+  email: string;
+  role: "editor" | "viewer";
+  createdAt: string;
+};

@@ -103,6 +103,41 @@ export async function deleteTrip(formData: FormData) {
   revalidatePath("/kosten");
 }
 
+export async function inviteTripMember(formData: FormData) {
+  const { client, user } = await getUserSupabase();
+  if (!client || !user) return;
+
+  const tripId = getText(formData, "tripId");
+  const email = getText(formData, "email").toLowerCase();
+  const role = getText(formData, "role") || "editor";
+  if (!tripId || !email) return;
+
+  await client.from("trip_members").upsert(
+    {
+      trip_id: tripId,
+      email,
+      role,
+      invited_by: user.id
+    },
+    { onConflict: "trip_id,email" }
+  );
+
+  revalidatePath(`/reisen/${tripId}`);
+}
+
+export async function removeTripMember(formData: FormData) {
+  const { client } = await getUserSupabase();
+  if (!client) return;
+
+  const tripId = getText(formData, "tripId");
+  const memberId = getNumber(formData, "memberId");
+  if (!tripId || !memberId) return;
+
+  await client.from("trip_members").delete().eq("id", memberId);
+
+  revalidatePath(`/reisen/${tripId}`);
+}
+
 export async function togglePackItem(formData: FormData) {
   const { client } = await getUserSupabase();
   if (!client) return;
