@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Caravan, LockKeyhole } from "lucide-react";
 import { signIn, signUp } from "@/lib/actions";
 import { Logo } from "@/components/logo";
+import { PendingButton } from "@/components/pending-button";
 
 export default function LoginPage({ searchParams }: { searchParams: Promise<{ message?: string; next?: string }> }) {
   return (
@@ -73,10 +74,10 @@ function AuthForm({
         Passwort
         <input name="password" type="password" required minLength={6} autoComplete={secondary ? "new-password" : "current-password"} className="min-h-11 rounded-xl border border-forest-700/10 bg-linen px-3 text-sm text-forest-900 outline-none ring-forest-700/20 focus:ring-4" />
       </label>
-      <button className={`inline-flex h-12 items-center justify-center gap-2 rounded-2xl text-sm font-semibold ${secondary ? "bg-cream text-forest-900" : "bg-forest-700 text-linen"}`}>
+      <PendingButton className={`inline-flex h-12 items-center justify-center gap-2 rounded-2xl text-sm font-semibold ${secondary ? "bg-cream text-forest-900" : "bg-forest-700 text-linen"}`} pendingText={secondary ? "Konto wird erstellt..." : "Einloggen..."}>
         <LockKeyhole size={17} />
         {button}
-      </button>
+      </PendingButton>
     </form>
   );
 }

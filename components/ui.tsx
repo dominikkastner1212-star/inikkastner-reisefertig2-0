@@ -28,7 +28,7 @@ export function SoftCard({ children, className = "" }: { children: ReactNode; cl
 
 export function PrimaryButton({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link href={href} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-forest-700 px-5 text-sm font-semibold text-linen shadow-soft">
+    <Link href={href} className="pressable inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-forest-700 px-5 text-sm font-semibold text-linen shadow-soft">
       {children}
       <ArrowRight size={17} />
     </Link>
@@ -37,7 +37,7 @@ export function PrimaryButton({ href, children }: { href: string; children: Reac
 
 export function TripCard({ trip }: { trip: Trip }) {
   return (
-    <Link href={`/reisen/${trip.id}`} className="block">
+    <Link href={`/reisen/${trip.id}`} className="pressable block">
     <SoftCard className="overflow-hidden p-0">
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
@@ -66,7 +66,7 @@ export function TripCard({ trip }: { trip: Trip }) {
 
 export function PlaceCard({ place }: { place: Place }) {
   return (
-    <Link href={`/stellplaetze/${place.id}`} className="grid grid-cols-[6rem_1fr] gap-3 rounded-2xl border border-forest-700/10 bg-linen/78 p-2 shadow-inset">
+    <Link href={`/stellplaetze/${place.id}`} className="pressable grid grid-cols-[6rem_1fr] gap-3 rounded-2xl border border-forest-700/10 bg-linen/78 p-2 shadow-inset">
       <div className="rounded-xl bg-[linear-gradient(150deg,#b7c8a8,#f1dfbe)]">
         <div className="h-full min-h-24 rounded-xl bg-[radial-gradient(circle_at_75%_25%,#f1c77e_0_1.2rem,transparent_1.25rem),linear-gradient(25deg,rgba(47,81,59,.45),transparent_58%)]" />
       </div>

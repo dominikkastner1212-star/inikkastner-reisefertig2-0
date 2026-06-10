@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/app-shell";
-import { PackItemForm, PackToggle } from "@/components/forms";
+import { PackItemForm } from "@/components/forms";
+import { PackToggle } from "@/components/pack-toggle";
 import { SectionTitle, SoftCard } from "@/components/ui";
 import { getPackItems, getTrips } from "@/lib/data";
 

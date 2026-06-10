@@ -1,8 +1,9 @@
 import { Link2, Plus } from "lucide-react";
-import { createCost, createPackItem, createTrip, createTripInviteLink, deleteTrip, removeTripMember, togglePackItem, toggleSavedPlace, updateTrip, updateVehicle } from "@/lib/actions";
-import type { PackItem, Trip, TripMember } from "@/lib/types";
+import { createCost, createPackItem, createTrip, createTripInviteLink, deleteTrip, removeTripMember, toggleSavedPlace, updateTrip, updateVehicle } from "@/lib/actions";
+import type { Trip, TripMember } from "@/lib/types";
 import { vehicle as mockVehicle } from "@/data/mock";
 import { CopyLink } from "@/components/copy-link";
+import { PendingButton } from "@/components/pending-button";
 
 const inputClass = "min-h-11 rounded-xl border border-forest-700/10 bg-linen px-3 text-sm text-forest-900 outline-none ring-forest-700/20 transition focus:ring-4";
 
@@ -21,10 +22,10 @@ export function TripForm() {
         <input name="stops" type="number" min="0" placeholder="Stopps" className={inputClass} />
         <input name="budget" type="number" min="0" step="0.01" placeholder="Budget EUR" className={inputClass} />
       </div>
-      <button className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-forest-700 text-sm font-semibold text-linen">
+      <PendingButton className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-forest-700 text-sm font-semibold text-linen" pendingText="Wird angelegt...">
         <Plus size={17} />
         Reise anlegen
-      </button>
+      </PendingButton>
     </form>
   );
 }
@@ -44,11 +45,11 @@ export function TripEditForm({ trip }: { trip: Trip }) {
           <input name="distanceKm" type="number" min="0" defaultValue={trip.distanceKm} className={inputClass} />
           <input name="budget" type="number" min="0" step="0.01" defaultValue={trip.budget} className={inputClass} />
         </div>
-        <button className="h-11 rounded-2xl bg-forest-700 text-sm font-semibold text-linen">Änderungen speichern</button>
+        <PendingButton className="h-11 rounded-2xl bg-forest-700 text-sm font-semibold text-linen" pendingText="Speichere...">Änderungen speichern</PendingButton>
       </form>
       <form action={deleteTrip} className="mt-2">
         <input type="hidden" name="id" value={trip.id} />
-        <button className="h-10 w-full rounded-2xl bg-clay/45 text-sm font-semibold text-forest-900">Reise löschen</button>
+        <PendingButton className="h-10 w-full rounded-2xl bg-clay/45 text-sm font-semibold text-forest-900" pendingText="Lösche...">Reise löschen</PendingButton>
       </form>
     </details>
   );
@@ -71,25 +72,7 @@ export function PackItemForm({ tripId }: { tripId?: string }) {
           <option value="hoch">wichtig</option>
         </select>
       </div>
-      <button className="h-11 rounded-2xl bg-forest-700 text-sm font-semibold text-linen">Hinzufügen</button>
-    </form>
-  );
-}
-
-export function PackToggle({ item }: { item: PackItem }) {
-  return (
-    <form action={togglePackItem}>
-      <input type="hidden" name="id" value={item.id} />
-      <input type="hidden" name="done" value={String(item.done)} />
-      <button className="flex w-full items-center justify-between rounded-xl border border-forest-700/10 bg-linen/70 px-3 py-3 text-left transition hover:bg-forest-50">
-        <div className="flex items-center gap-3">
-          <span className={`grid h-5 w-5 place-items-center rounded-full border text-xs ${item.done ? "border-forest-700 bg-forest-700 text-linen" : "border-forest-700/30"}`}>
-            {item.done ? "✓" : ""}
-          </span>
-          <span className="text-sm font-medium text-forest-900">{item.label}</span>
-        </div>
-        {item.priority === "hoch" ? <span className="rounded-full bg-clay/55 px-2 py-1 text-[0.65rem] font-semibold text-forest-900">wichtig</span> : null}
-      </button>
+      <PendingButton className="h-11 rounded-2xl bg-forest-700 text-sm font-semibold text-linen" pendingText="Füge hinzu...">Hinzufügen</PendingButton>
     </form>
   );
 }
@@ -103,10 +86,10 @@ export function CostForm({ tripId }: { tripId: string }) {
         <input name="amount" required type="number" min="0" step="0.01" placeholder="Betrag" className={inputClass} />
         <input name="color" type="color" defaultValue="#55764d" className="h-11 rounded-xl border border-forest-700/10 bg-linen p-1" aria-label="Farbe" />
       </div>
-      <button className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-forest-700 text-sm font-semibold text-linen">
+      <PendingButton className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-forest-700 text-sm font-semibold text-linen" pendingText="Speichere...">
         <Plus size={17} />
         Ausgabe speichern
-      </button>
+      </PendingButton>
     </form>
   );
 }
@@ -124,7 +107,7 @@ export function VehicleForm({ vehicle = mockVehicle }: { vehicle?: typeof mockVe
         <input name="battery" type="number" min="0" max="100" defaultValue={vehicle.battery} placeholder="Batterie %" className={inputClass} />
         <input name="nextService" defaultValue={vehicle.nextService} placeholder="Service" className={inputClass} />
       </div>
-      <button className="h-12 rounded-2xl bg-forest-700 text-sm font-semibold text-linen">Fahrzeug speichern</button>
+      <PendingButton className="h-12 rounded-2xl bg-forest-700 text-sm font-semibold text-linen" pendingText="Speichere...">Fahrzeug speichern</PendingButton>
     </form>
   );
 }
@@ -134,9 +117,9 @@ export function SavePlaceButton({ placeId, saved }: { placeId: string; saved: bo
     <form action={toggleSavedPlace}>
       <input type="hidden" name="placeId" value={placeId} />
       <input type="hidden" name="saved" value={String(saved)} />
-      <button className={`mt-4 h-12 w-full rounded-2xl text-sm font-semibold ${saved ? "bg-cream text-forest-900" : "bg-forest-700 text-linen"}`}>
+      <PendingButton className={`mt-4 h-12 w-full rounded-2xl text-sm font-semibold ${saved ? "bg-cream text-forest-900" : "bg-forest-700 text-linen"}`} pendingText="Aktualisiere...">
         {saved ? "Gespeichert" : "Stellplatz speichern"}
-      </button>
+      </PendingButton>
     </form>
   );
 }
@@ -156,10 +139,10 @@ export function InviteMemberForm({ tripId, inviteUrl, inviteError = false }: { t
           <option value="editor">Kann bearbeiten</option>
           <option value="viewer">Nur ansehen</option>
         </select>
-        <button className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-forest-700 text-sm font-semibold text-linen">
+        <PendingButton className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-forest-700 text-sm font-semibold text-linen" pendingText="Erstelle Link...">
           <Link2 size={17} />
           Einladungslink erstellen
-        </button>
+        </PendingButton>
       </form>
     </div>
   );
@@ -181,7 +164,7 @@ export function MemberList({ tripId, members }: { tripId: string; members: TripM
           <form action={removeTripMember}>
             <input type="hidden" name="tripId" value={tripId} />
             <input type="hidden" name="memberId" value={member.id} />
-            <button className="rounded-full bg-clay/45 px-3 py-1 text-xs font-semibold text-forest-900">Entfernen</button>
+            <PendingButton className="rounded-full bg-clay/45 px-3 py-1 text-xs font-semibold text-forest-900" pendingText="...">Entfernen</PendingButton>
           </form>
         </div>
       ))}

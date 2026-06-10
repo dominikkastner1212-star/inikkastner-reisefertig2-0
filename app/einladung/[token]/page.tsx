@@ -3,6 +3,7 @@ import { CheckCircle2, LogIn, Users } from "lucide-react";
 import { acceptTripInvite } from "@/lib/actions";
 import { getCurrentUser } from "@/lib/auth";
 import { Logo } from "@/components/logo";
+import { PendingButton } from "@/components/pending-button";
 
 export default async function InvitePage({
   params,
@@ -36,10 +37,10 @@ export default async function InvitePage({
         {user ? (
           <form action={acceptTripInvite} className="mt-6">
             <input type="hidden" name="token" value={token} />
-            <button className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-forest-700 text-sm font-semibold text-linen">
+            <PendingButton className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-forest-700 text-sm font-semibold text-linen" pendingText="Wird angenommen...">
               <CheckCircle2 size={18} />
               Einladung annehmen
-            </button>
+            </PendingButton>
             <p className="mt-3 text-center text-xs text-forest-900/50">{user.email}</p>
           </form>
         ) : (

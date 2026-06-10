@@ -25,7 +25,7 @@ export function CopyLink({ url }: { url: string }) {
         <button
           type="button"
           onClick={copyLink}
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-cream px-3 text-xs font-semibold text-forest-900"
+          className="pressable inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-cream px-3 text-xs font-semibold text-forest-900"
         >
           {copied ? <Check size={15} /> : <Copy size={15} />}
           {copied ? "Kopiert" : "Kopieren"}

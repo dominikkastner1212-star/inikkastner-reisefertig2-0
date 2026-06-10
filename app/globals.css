@@ -25,6 +25,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -55,6 +56,39 @@ button,
 input,
 select {
   font: inherit;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+}
+
+.pressable {
+  transform: translateZ(0);
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease,
+    background-color 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.pressable:active {
+  transform: scale(0.975);
+  opacity: 0.86;
+}
+
+.pressable:focus-visible {
+  outline: 3px solid rgba(43, 90, 60, 0.28);
+  outline-offset: 2px;
 }
 
 .glass-panel {

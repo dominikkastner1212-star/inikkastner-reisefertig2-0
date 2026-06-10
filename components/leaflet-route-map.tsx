@@ -142,7 +142,7 @@ function FastRoutePreview({ stops, onLoadMap }: { stops: typeof fallbackStops; o
       })}
       <button
         onClick={onLoadMap}
-        className="absolute right-4 top-4 rounded-2xl bg-linen/90 px-4 py-3 text-xs font-semibold text-forest-900 shadow-soft"
+        className="pressable absolute right-4 top-4 rounded-2xl bg-linen/90 px-4 py-3 text-xs font-semibold text-forest-900 shadow-soft"
       >
         Interaktive Karte laden
       </button>
